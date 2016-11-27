@@ -480,5 +480,5 @@ class BaseModel(object):
                        #print("Variable %s:%s missed" %(op_name, param_name))
                         if not ignore_missing:
                             raise
-        print("%d variables loaded. %d variables missed." %(count, miss_count))
+        #print("%d variables loaded. %d variables missed." %(count, miss_count))
 
