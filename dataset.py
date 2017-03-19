@@ -46,7 +46,7 @@ class DataSet():
         self.current_index = 0
         self.count = len(self.img_files)
         self.indices = list(range(self.count))
-        self.num_batches = int(self.count/self.batch_size)
+        self.num_batches = int(self.count/self.batch_size) # 每次epoch要运行多少次batch
         self.reset()
 
     def reset(self):
@@ -114,13 +114,13 @@ def prepare_train_coco_data(args):
 
 def prepare_train_pascal_data(args):
     """ Prepare relevant PASCAL data for training the model. """
-    image_dir, annotation_dir, data_dir = args.train_pascal_image_dir, args.train_pascal_annotation_dir, args.train_pascal_data_dir
-    batch_size = args.batch_size
-    basic_model = args.basic_model
-    num_roi = args.num_roi
+    image_dir, annotation_dir, data_dir = args.train_pascal_image_dir, args.train_pascal_annotation_dir, args.train_pascal_data_dir  # 获得图像路径、标注路径以及暂时文件保存文件夹
+    batch_size = args.batch_size  # batch_size的设置
+    basic_model = args.basic_model  # 使用的基础模型
+    num_roi = args.num_roi  # 最多的ROI数目
 
-    files = os.listdir(annotation_dir)
-    img_ids = list(range(len(files)))
+    files = os.listdir(annotation_dir)  # 获取标注文件的文件名
+    img_ids = list(range(len(files)))  # 每一副图像对应一个标注文件
 
     img_files = []
     img_heights = []
@@ -139,15 +139,15 @@ def prepare_train_pascal_data(args):
         img_file = os.path.join(image_dir, img_name)
         img_files.append(img_file) 
 
-        img_id_str = os.path.splitext(img_name)[0]
+        img_id_str = os.path.splitext(img_name)[0]  # 分离文件名字和扩展名
 
         size = root.find('size')
         img_height = int(size.find('height').text)
         img_width = int(size.find('width').text)
-        img_heights.append(img_height) 
-        img_widths.append(img_width) 
+        img_heights.append(img_height)  # 获取图片的高度
+        img_widths.append(img_width)  # 获取图片的宽度
 
-        anchor_files.append(os.path.join(data_dir, img_id_str+'_'+basic_model+'_anchor.npz')) 
+        anchor_files.append(os.path.join(data_dir, img_id_str+'_'+basic_model+'_anchor.npz'))  # anchor_files的文件名
 
         classes = [] 
         bboxes = [] 
@@ -161,10 +161,10 @@ def prepare_train_pascal_data(args):
             ymin = int(bndbox.find('ymin').text)
             xmax = int(bndbox.find('xmax').text)
             ymax = int(bndbox.find('ymax').text)
-            bboxes.append([ymin, xmin, ymax-ymin+1, xmax-xmin+1]) 
+            bboxes.append([ymin, xmin, ymax-ymin+1, xmax-xmin+1])  #  行、列、高、宽
 
-        gt_classes.append(classes)  
-        gt_bboxes.append(bboxes) 
+        gt_classes.append(classes)  # 保存该图片对应的类别
+        gt_bboxes.append(bboxes)  # 保存该图片对应的所有类别的box
  
     print("Building the training dataset...")
     dataset = DataSet(img_ids, img_files, img_heights, img_widths, batch_size, anchor_files, gt_classes, gt_bboxes, True, True)
